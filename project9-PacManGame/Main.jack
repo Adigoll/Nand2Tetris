@@ -1,0 +1,24 @@
+class Main {
+
+    function void main() {
+        var PacManGame game;
+        var char key;
+        var boolean stopLoop;
+        while (true) {
+            let stopLoop = false;
+            do Display.startScreen();
+            let game = PacManGame.new();
+            do game.runPacManGame();
+            while (~stopLoop) {
+                let key = Keyboard.keyPressed();
+		        if (key = 32) { 
+                    do Screen.clearScreen();
+                    let stopLoop = true;
+                }
+            }
+            do game.dispose();
+        }        
+        return;
+    }
+
+}

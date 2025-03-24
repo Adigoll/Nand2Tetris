@@ -1,0 +1,163 @@
+class PacMan {
+
+    // the left-up corner position of PacMan
+    field int row, col;
+
+    // the direction PacMan is moving
+    // 1=up, 2=down, 3=right, 4=left
+    field int direction;
+
+    constructor PacMan new(int row1, int col1, int newDirection) {
+        let row = row1;
+        let col = col1;
+        let direction = newDirection;
+        return this;
+    }
+    
+    method int getRow() {
+        return row;
+    }
+
+    method int getCol() {
+        return col;
+    }
+
+    method int getDirection() {
+        return direction;
+    }
+
+    method void setDirection() { // sets pacman's direction according to the direction key that was pressed
+		var char key;
+		let key = Keyboard.keyPressed();
+		if (key = 131) { 
+            let direction = 1; 
+        } // up
+		if (key = 133) { 
+            let direction = 2; 
+        } // down
+		if (key = 132) { 
+            let direction = 3; 
+        } // right
+		if (key = 130) { 
+            let direction = 4;
+        } // left
+        return;
+	}
+
+    method void move() { // sets the new location of the ghost according to its new direction
+        if (direction = 1) {
+            let row = row - 1;
+        }
+        if (direction = 2) {
+            let row = row + 1;
+        }
+        if (direction = 3) {
+            let col = col + 1;
+        }
+        if (direction = 4) {
+            let col = col - 1;
+        }
+        return;
+    }
+
+    method boolean isPixelBlack(int row, int col) { // check if the pixel on (col,row) is black
+        var int memAddress, pixelValue;
+        let memAddress = 16384 + (row * 32) + (col / 16);
+        let pixelValue = Memory.peek(memAddress);
+        if (pixelValue = -1) {
+            return true;
+        }
+        return false;
+    }
+
+    method boolean willCollideWithWall() { // check if ghost will collide with wall according to its direction, using the isPixelBlack for the checking
+        var int i;
+        let i = 0;
+        if (direction = 1) {
+            while (i < 16) {
+                if (isPixelBlack(row - 1, col + i)) {
+                    return true;
+                }
+                let i = i + 1;
+            }
+        }
+        let i = 0;
+        if (direction = 2) {
+            while (i < 16) {
+                if (isPixelBlack(row + 16, col + i)) {
+                    return true;
+                }
+                let i = i + 1;
+            }
+        }
+        let i = 0;
+        if (direction = 3) {
+            while (i < 16) {
+                if (isPixelBlack(row + i , col + 16)) {
+                    return true;
+                }
+                let i = i + 1;
+            }
+        }
+        
+        let i = 0;
+        if (direction = 4) {
+            while (i < 16) {
+                if (isPixelBlack(row + i , col - 1)) {
+                    return true;
+                }
+                let i = i + 1;
+            }
+        }
+        return false;
+    }
+
+    method boolean isCollisionApple() { // Checks if pacman is in the apple's location (if so, he ate it)
+        if (row = 48 & col = 448) {
+            return true;
+        }
+        return false;
+    }
+
+    method boolean isCollisionApple2() { // Checks if pacman is in the apple's location (if so, he ate it)
+        if (row = 144 & col = 224) {
+            return true;
+        }
+        return false;
+    }
+
+    method boolean isCollisionCherries() { // Checks if pacman is in the Cherries's location (if so, he ate it)
+        if (row = 192 & col = 48) {
+            return true;
+        }
+        return false;
+    }
+
+    method boolean isCollisionCherries2() { // Checks if pacman is in the Cherries's location (if so, he ate it)
+        if (row = 224 & col = 336) {
+            return true;
+        }
+        return false;
+    }
+
+    method boolean isCollisionStrawBerry() { // Checks if pacman is in the StrawBerry's location (if so, he ate it)
+        if (row = 192 & col = 448) {
+            return true;
+        }
+        return false;
+    }
+
+    method boolean isCollisionStrawBerry2() { // Checks if pacman is in the StrawBerry's location (if so, he ate it)
+        if (row = 16 & col = 336) {
+            return true;
+        }
+        return false;
+    }
+
+    method void dispose() {
+        do Memory.deAlloc(this);
+        return;
+    }
+    
+    
+}

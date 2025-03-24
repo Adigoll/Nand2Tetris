@@ -1,0 +1,148 @@
+class PacManGame {
+
+    field PacMan pacMan;
+    field Ghost ghost1;
+    field Ghost ghost2;
+    field Ghost ghost3;
+    field int countPellets;
+    field boolean hasWon;
+    field boolean gameOver;
+    field boolean ateApple;
+    field boolean ateApple2;
+    field boolean ateCherris;
+    field boolean ateCherris2;
+    field boolean ateStrawBerry;
+    field boolean ateStrawBerry2;
+
+    constructor PacManGame new() {
+        do Display.drawMaze(); // draws the maze
+        do Display.drawPellets();
+        let pacMan = PacMan.new(16, 16, 2); // init PacMan on th top-left corner
+        do Display.drawPacManDown((pacMan.getRow() * 32) + (pacMan.getCol() / 16)); // draws PacMan on th top-left corner
+        let ghost1 = Ghost.new(16, 480, 2); // inits first ghost on the top-right corner
+        do Display.drawGhost((ghost1.getRow() * 32) + (ghost1.getCol()/16)); // draws first ghost on the right-up corner
+        let ghost2 = Ghost.new(224, 480, 4); // inits second ghost on bottom-right corner
+        do Display.drawGhost((ghost2.getRow() * 32) + (ghost2.getCol()/16)); // draws second ghost on right down corner
+        let ghost3 = Ghost.new(224, 16, 1); // inits third ghost on bottom-left corner
+        do Display.drawGhost((ghost3.getRow() * 32) + (ghost3.getCol()/16)); // draws third ghost on left down corner
+        let hasWon = false; // indicates when user won the game (pacman ate all pellets)
+        let gameOver = false; // indicate whens user lost the game (pacman collided with ghost)
+        do Display.drawApple((48 * 32) + (448 / 16)); //Drawing the fruits on the screen
+        do Display.drawApple((144 * 32) + (224 / 16));
+        do Display.drawCherries((192 * 32) + (48 / 16));
+        do Display.drawCherries((224 * 32) + (336 / 16));
+        do Display.drawStrawBerry((192 * 32) + (448 / 16));
+        do Display.drawStrawBerry((16 * 32) + (336 / 16));
+        let ateApple = false; // indicators that checks if pacman "ate" the fruits
+        let ateApple2 = false;
+        let ateCherris = false;
+        let ateCherris2 = false;
+        let ateStrawBerry = false;
+        let ateStrawBerry2 = false;
+        return this;
+    }
+
+    method void runPacManGame() {
+        while ((~hasWon) & (~gameOver)) { // runs while the player didn't win/lose
+            do pacMan.setDirection(); // sets direction according to the keybord input
+            do Display.deleteIcon((pacMan.getRow() * 32) + (pacMan.getCol() / 16)); // deletes the previous pacman
+            // draws the pacman according to his new direction before moving
+            if (pacMan.getDirection() = 1) { 
+                do Display.drawPacManUp((pacMan.getRow() * 32) + (pacMan.getCol() / 16));
+            }
+            if (pacMan.getDirection() = 2) {
+                do Display.drawPacManDown((pacMan.getRow() * 32) + (pacMan.getCol() / 16));
+            }
+            if (pacMan.getDirection() = 3) {
+                do Display.drawPacManRight((pacMan.getRow() * 32) + (pacMan.getCol() / 16));
+            }
+            if (pacMan.getDirection() = 4) {
+                do Display.drawPacManLeft((pacMan.getRow() * 32) + (pacMan.getCol() / 16));
+            }
+            // if pacman can move (won't collide with wall)
+            if (~pacMan.willCollideWithWall()) {
+                do Display.deleteIcon((pacMan.getRow() * 32) + (pacMan.getCol() / 16)); // deletes the previous pacman
+                do pacMan.move(); // sets new location for pacman
+                // draws the new pacman after the move
+                if (pacMan.getDirection() = 1) { 
+                    do Display.drawPacManUp((pacMan.getRow() * 32) + (pacMan.getCol() / 16));
+                }
+                if (pacMan.getDirection() = 2) {
+                    do Display.drawPacManDown((pacMan.getRow() * 32) + (pacMan.getCol() / 16));
+                }
+                if (pacMan.getDirection() = 3) {
+                    do Display.drawPacManRight((pacMan.getRow() * 32) + (pacMan.getCol() / 16));
+                }
+                if (pacMan.getDirection() = 4) {
+                    do Display.drawPacManLeft((pacMan.getRow() * 32) + (pacMan.getCol() / 16));
+                }
+            }
+            // move 3 ghosts
+            // ghost1:
+            if (ghost1.willCollideWithWall()) { // if ghost collided with wall, change direction
+                do ghost1.setDirection();
+            }
+            do Display.deleteIcon((ghost1.getRow() * 32) + (ghost1.getCol()/16)); // deletes previous ghost
+            do ghost1.move(); // move the ghost
+            do Display.drawGhost((ghost1.getRow() * 32) + (ghost1.getCol()/16)); // draws the new ghost after the move
+            // same for ghost2:
+            if (ghost2.willCollideWithWall()) {
+                do ghost2.setDirection();
+            }
+            do Display.deleteIcon((ghost2.getRow() * 32) + (ghost2.getCol()/16));
+            do ghost2.move();
+            do Display.drawGhost((ghost2.getRow() * 32) + (ghost2.getCol()/16));
+            // same for ghost3:
+            if (ghost3.willCollideWithWall()) {
+                do ghost3.setDirection();
+            }
+            do Display.deleteIcon((ghost3.getRow() * 32) + (ghost3.getCol()/16));
+            do ghost3.move();
+            do Display.drawGhost((ghost3.getRow() * 32) + (ghost3.getCol()/16));
+            // if one of the ghosts collided with pacman, player lost
+            if (ghost1.isCollisionPacMan(pacMan) | ghost2.isCollisionPacMan(pacMan) | ghost3.isCollisionPacMan(pacMan)) {
+                let gameOver = true;
+            }
+
+            if (pacMan.isCollisionApple() = true) { //checks if Apple1 was eaten
+                let ateApple = true;
+            } 
+            if (pacMan.isCollisionApple2() = true) { //checks if Apple2 was eaten
+                let ateApple2 = true;
+            } 
+            if (pacMan.isCollisionCherries() = true) { //checks if Cherries1 were eaten
+                let ateCherris = true;
+            } 
+            if (pacMan.isCollisionCherries2() = true) { //checks if Cherries2 were eaten
+                let ateCherris2 = true;
+            } 
+            if (pacMan.isCollisionStrawBerry() = true) { //checks if SrawBerry1 was eaten
+                let ateStrawBerry = true;
+            } 
+            if (pacMan.isCollisionStrawBerry2() = true) { //checks if SrawBerry2 was eaten
+                let ateStrawBerry2 = true;
+            } 
+            if (ateApple = true & ateCherris = true & ateStrawBerry = true & ateApple2 = true & ateCherris2 = true & ateStrawBerry2 = true) { //checks if player won the game
+                let hasWon = true;
+            }
+        }
+        if (gameOver) { // if gameover, show message
+            do Output.moveCursor(0,0);
+            do Output.printString("Game Over, but never give Up!      press SPACE key to try again");
+        }
+        if (hasWon) { // if player win (ate all the fruits)
+            do Display.endScreen(); // draws endScreen
+        }
+        return;
+    }
+
+    method void dispose() {
+        do pacMan.dispose();
+        do ghost1.dispose();
+        do ghost2.dispose();
+        do ghost3.dispose();
+        do Memory.deAlloc(this);
+        return;
+    }
+
+}
